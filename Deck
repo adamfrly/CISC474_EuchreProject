@@ -1,0 +1,60 @@
+import random
+
+# Uses 9 through Ace
+# 4 players, each dealt 5, 4 left over in the kitty
+# Each card has a number and a suit
+#   Dictionary
+# Four suits
+
+SUITS = {'Spades', 'Hearts', 'Diamonds', 'Clubs'}
+CARDS = {'9', '10', 'Jack', 'Queen', 'King', 'Ace'}
+
+class Deck:
+
+    def __init__(self):
+        self.deck = [0 for n in range(24)]
+        n = 0
+        for i in SUITS:
+            for j in CARDS:
+                self.deck[n] = {'suit' : i, 'number' : j}
+                n += 1
+        self.hand_1 = None
+        self.hand_2 = None
+        self.hand_3 = None
+        self.hand_4 = None
+        self.kitty = None
+
+    def shuffle(self):
+        random.shuffle(self.deck)
+
+    def deal(self):
+        self.hand_1 = random.sample(self.deck, 5)
+        reduced_deck = [card for card in self.deck if card not in self.hand_1]
+        self.hand_2 = random.sample(reduced_deck, 5)
+        reduced_deck = [card for card in reduced_deck if card not in self.hand_2]
+        self.hand_3 = random.sample(reduced_deck, 5)
+        reduced_deck = [card for card in reduced_deck if card not in self.hand_3]
+        self.hand_4 = random.sample(reduced_deck, 5)
+        self.kitty = [card for card in reduced_deck if card not in self.hand_4]
+
+# Demonstrates one round of dealing cards
+def main():
+    test = Deck()
+    print(test.deck, 'sorted')
+    print()
+    test.shuffle()
+    print(test.deck, 'shuffled')
+    print()
+    test.deal()
+    print(test.hand_1, '1')
+    print()
+    print(test.hand_2, '2')
+    print()
+    print(test.hand_3, '3')
+    print()
+    print(test.hand_4, '4')
+    print()
+    print(test.kitty, 'kitty')
+    print()
+
+main()
