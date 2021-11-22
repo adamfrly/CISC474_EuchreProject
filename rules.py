@@ -32,16 +32,19 @@ def greater_than(card, other, trump):
 
 def legal_move(played, lead, hand, trump):
     l_bower = lower_bower(trump)
-    if not ({'suit' : l_bower, 'number' : 2} in hand and {'suit' : l_bower, 'number' : 2} == played): # If left bower is not involved at all
+    left_in_hand = {'suit' : l_bower, 'number' : 2} in hand
+    left_played = {'suit' : l_bower, 'number' : 2} == played
+
+    if not (left_in_hand and left_played): # Left bower is not involved at all
         played_lead = played['suit'] == lead
         has_lead_suit = any(card['suit']==lead for card in hand)
         return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
-    elif {'suit' : l_bower, 'number' : 2} == played:
+    elif left_played:
         played_lead = trump == lead
         has_lead_suit = any(card['suit']==lead for card in hand)
-        return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
-    elif {'suit' : l_bower, 'number' : 2} in hand:
+        return played_lead or not has_lead_suit
+    elif left_in_hand:
         played_lead = played['suit'] == lead
         has_lead_suit = any(card['suit']==lead for card in hand) or lead == trump
-        return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
+        return played_lead or not has_lead_suit
     return "Somehow you fucked up bad"
