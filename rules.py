@@ -11,29 +11,29 @@ def greater_than(card, other, trump):
     """
     Checks if one card is larger than another based on the current trump
     """
-    c_rank = card.number
-    o_rank = other.number
-    if card.number != 2: # Isn't a jack
-        if card.suit == trump:
+    c_rank = card['number']
+    o_rank = other['number']
+    if card['number'] != 2: # Isn't a jack
+        if card['suit'] == trump:
             c_rank += 6
-        if other.suit == trump:
+        if other['suit'] == trump:
             o_rank += 6
     else:
         l_bower = lower_bower(trump)
-        if card.suit == trump:
+        if card['suit'] == trump:
             c_rank = 13
-        elif card.suit == l_bower:
+        elif card['suit'] == l_bower:
             c_rank = 12
-        if other.suit == trump:
+        if other['suit'] == trump:
             o_rank = 13
-        elif other.suit == l_bower:
+        elif other['suit'] == l_bower:
             o_rank = 12
     return c_rank > o_rank
 
 def legal_move(played, lead, hand, trump):
     l_bower = lower_bower(trump)
     if not ({'suit' : l_bower, 'number' : 2} in hand and {'suit' : l_bower, 'number' : 2} == played): # If left bower is not involved at all
-        played_lead = played.suit == lead
+        played_lead = played['suit'] == lead
         has_lead_suit = any(card['suit']==lead for card in hand)
         return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
     elif {'suit' : l_bower, 'number' : 2} == played:
@@ -41,7 +41,7 @@ def legal_move(played, lead, hand, trump):
         has_lead_suit = any(card['suit']==lead for card in hand)
         return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
     elif {'suit' : l_bower, 'number' : 2} in hand:
-        played_lead = played.suit == lead
+        played_lead = played['suit'] == lead
         has_lead_suit = any(card['suit']==lead for card in hand) or lead == trump
         return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
     return "Somehow you fucked up bad"
