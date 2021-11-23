@@ -1,3 +1,5 @@
+import numpy as np
+
 # Rules that need to be implemented:
 # Adjusting the suit ranks depending on trump
 # Checking if a move is legal depending on the lead and their hand
@@ -5,7 +7,30 @@
 
 def lower_bower(trump):
     return trump - 2 if trump - 2 > 0 else trump + 2
-# Need to ask Grace to have suits ordered like this ['Hearts', 'Spades', 'Diamonds', 'Clubs'] for this to work
+# Need to ask Grace to have suits ordered like this ['Hearts', 'Spades', 'Diamonds', 'Clubs'] for this to work    
+
+def is_leftbower(card, trump):
+    if card['number'] != 2:
+        return False
+    l_bower = lower_bower(trump)
+    if card['suit'] == l_bower:
+        return True
+    return False
+
+def is_trump(card, trump):
+    if card['suit'] == trump:
+        return True
+    if is_leftbower(card):
+        return True
+    return False
+
+def is_lead(card, trump, lead):
+    if card['suit'] == lead:
+        return True
+    if lead == trump:
+        if is_leftbower(card, trump):
+            return True
+    return False
 
 def greater_than(card, other, lead, trump):
     """
@@ -35,7 +60,25 @@ def greater_than(card, other, lead, trump):
     print(f"First rank: {c_rank}\nSecond rank: {o_rank}")
     return c_rank > o_rank
 
-def legal_move(played, lead, hand, trump):
+def card_rank(card, trump, lead):
+    """
+    Finds the strength of a card from 0 to 25 based on its rank, the trump suit, and the lead suit
+    """
+    rank = card['number']
+    l_bower = lower_bower(trump)
+    if card['number'] == 2: # Getting rid of bowers
+        if card['suit'] == trump: # Right bower
+            return 25
+        elif card['suit'] == l_bower: # Left Bower
+            return 24 
+    if card['suit'] == trump:
+        rank += 12
+    if card['suit'] == lead:
+        rank += 6
+    return rank
+
+def legal_move(played, lead, hand_with, trump):
+    hand = hand_with.remove(played)
     l_bower = lower_bower(trump)
     left_in_hand = {'suit' : l_bower, 'number' : 2} in hand
     left_played = {'suit' : l_bower, 'number' : 2} == played
