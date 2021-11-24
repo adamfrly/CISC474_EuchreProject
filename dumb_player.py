@@ -49,5 +49,6 @@ def strategic_choice(hand, trump, lead):
     if not np.any(ranks_lead):
         return np.argmax(ranks_lead) # Tries to play its highest lead suit that is allowed
 
-    return np.argmin(avail_ranks) # TODO Need a way to pick argmin of non-zero entries in avail_ranks (don't want to pick illegal moves obviously)
+    min_rank = np.min(avail_ranks[np.nonzero(avail_ranks)]) # Lowest rank non-zero (i.e. legal) card to play
+    return np.where(avail_ranks == min_rank)[0][0] # returns the index of that card
 
