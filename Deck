@@ -6,8 +6,10 @@ import random
 #   Dictionary
 # Four suits
 
-SUITS = ['Spades', 'Hearts', 'Clubs', 'Diamonds']
-CARDS = ['9', '10', 'Jack', 'Queen', 'King', 'Ace']
+#SUITS = ['Spades', 'Hearts', 'Clubs', 'Diamonds']
+SUITS = [0, 1, 2, 3]
+#CARDS = ['9', '10', 'Jack', 'Queen', 'King', 'Ace']
+CARDS = [0, 1, 2, 3, 4, 5]
 
 class Deck:
 
