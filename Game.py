@@ -38,15 +38,14 @@ def run_round(strategy):
             deck.hand_1.remove(action)
             state.play_card(action, 'us', 0)     
         else:
-            card = strategy(players[i], trump, lead)
+            card = strategy(players[i], trump, None)
             lead = players[i]['suit']
             state.play_card(players[i][card], team, i)
-            deck.players[i].delete(card)
-        # Needs to add the value of 'being lead suit' to this card       
+            deck.players[i].delete(card)      
         # Everybody else
         for i in range(1, len(players)):
             if players[i] == learning_player:
-                action = state.select_action(deck, trump, None)
+                action = state.select_action(deck, trump, lead)
                 deck.hand_1.remove(action)
                 state.play_card(action, 'us', 0)
                 # Q-learning
@@ -72,7 +71,7 @@ def run_round(strategy):
         # See who leads next
         maxi = 0
         for i in range(1, len(self.hand)):
-            if self.hand[i]['value'] > self.hand[maxi]['value']:
+            if self.hand[i]['card_rank'] > self.hand[maxi]['card_rank']:
                 maxi = i
         winner = self.hand[maxi]['player']
         players = players[winner:] + players[:winner]
@@ -90,8 +89,6 @@ def run_round(strategy):
         lead = players[i][card]['suit']
         state.play_card(players[i][card], team, i)
         deck.players[i].delete(card)
-    # Needs to add the value of 'being lead suit' to this card
-            # As Adam what function assigns card value
     # Everyone else
     for i in range(1, len(players)):
         if players[i] == learning_player:
