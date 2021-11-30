@@ -26,15 +26,15 @@ class State():
     # F2 - value of card in relation to the highest one played
     def high_card_feature(self, action):
         if len(state.hand) == 0:
-            return action['value']
-        maximum = self.hand[-1]['value']
+            return action['card_rank']
+        maximum = self.hand[-1]['card_rank']
         for i in range(len(self.hand)-1):
-            if self.hand[i]['value'] > maximum:
-                maximum = self.hand[i]['value']
-        diff = action['value'] - maximum
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
         if diff > 0:
             return diff
-        return 1/action['value']
+        return 1/action['card_rank']
 
     # F3 - value of card in relation to which team is leading the hand
     def leading_team_feature(self, action):
@@ -42,12 +42,12 @@ class State():
             return 0
         maxi = 0
         for i in range(1, len(self.hand)):
-            if self.hand[i]['value'] > self.hand[maxi]['value']:
+            if self.hand[i]['card_rank'] > self.hand[maxi]['card_rank']:
                 maxi = i
         if self.hand[maxi]['team'] == 'us':
-            return 1/action['value']
+            return 1/action['card_rank']
         else:
-            return action['value']
+            return action['card_rank']
 
     # Pick which action the learning player will use
     # Add a call to only pick from legal moves
@@ -78,7 +78,7 @@ class State():
     def reward(self):
         maxi = 0
         for i in range(1, len(self.hand)):
-            if self.hand[i]['value'] > self.hand[maxi]['value']:
+            if self.hand[i]['card_rank'] > self.hand[maxi]['card_rank']:
                 maxi = i
         if self.hand[maxi]['team'] == 'us':
             return 1 # Positive reward for winning a trick
