@@ -58,21 +58,31 @@ class State():
             # Greedy selection
             return self.select_max_action(deck)# Greedy selection
         # Random action with probability epsilon
-        return random.choice(deck.hand_1)
+        # Legal moves
+        choices = list()
+        for x in deck.hand_1:
+            if legal_move(x, trump, lead):
+                choices.append(x)
+        return random.choice(choices)
 
     # Greedy move selection
     # Choose the action that has to the highest Q-value
     # Add a call to only pick from legal moves
     def select_max_action(self, deck):
-        max = 0    
-        for i in range(len(deck.hand_1) - 1):
-            q1 = self.value_approximation(self, deck.hand_1[i])
-            q2 = self.value_approximation(self, deck.hand_1[i+1])
+        max = 0  
+        # legal_moves
+        choices = list()
+        for x in deck.hand_1:
+            if legal_move(x, trump, lead):
+                choices.append(x)              
+        for i in range(len(choices) - 1):
+            q1 = self.value_approximation(self, choices[i])
+            q2 = self.value_approximation(self, choices[i+1])
             if q1 > q2:
                 max = i
             else:
                 max = i + 1
-        return deck.hand_1[max]
+        return choices[max]
 
     # Assuming learning agent is team 'us'
     def reward(self):
