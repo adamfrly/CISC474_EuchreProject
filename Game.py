@@ -109,13 +109,6 @@ def run_round(strategy):
             card = deck.players[i][0]
             state.play_card(players[i][card], team, i)
             deck.players[i].delete(players[i][card])
-                
-# Needs a overarching function for 'your turn'
-def turn(hand, strategy, state, trump, deck):
-    if len(state.hand) == 0:
-        lead = None
-    card = strategy(hand, trump, lead)
-    return card
 
 # Strategy = random_choice, greedy_choice, or strategic_choice
 def game_setup(strategy):
