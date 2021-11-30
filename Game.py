@@ -102,7 +102,7 @@ def run_round(strategy):
             # Q-learning
             # Terminal state has Q value of 0
             # w <- w + alpha(r + gamma(maxQ(s',a) - Q(s,a))grad(Q(s,a))
-            weights = weights + alpha*(reward - q)             
+            weights = weights + alpha*(reward - q)*features             
         else:
             if players[i] == deck.hand_3:
                 team = 'us'
