@@ -77,11 +77,18 @@ def run_round(strategy):
         # Next hand begins
         hand += 1
     # Only one card left per players
-    
-    # Seaparate the leading player     
-    lead =
-    
-    # Everybody else
+    # Separate the leading player
+    if players[0] == learning_player:
+        action = deck.hand_1[0]
+        lead = action['suit']
+        deck.hand_1.remove(action)
+        state.play_card(action, 'us', 0)     
+    else:
+        card = deck.players[i][0]
+        lead = players[i][card]['suit']
+        state.play_card(players[i][card], team, i)
+        deck.players[i].delete(card)
+    # Everyone else
     for i in range(1, len(players)):
         if players[i] == learning_player:
             action = deck.hand_1[0]
@@ -97,8 +104,8 @@ def run_round(strategy):
             else:
                 team = 'them'
             card = deck.players[i][0]
-            deck.players[i].remove(card)
-            state.play_card(card, team, i)
+            state.play_card(players[i][card], team, i)
+            deck.players[i].delete(players[i][card])
                 
 # Needs a overarching function for 'your turn'
 def turn(hand, strategy, state, trump, deck):
