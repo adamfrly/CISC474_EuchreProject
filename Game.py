@@ -4,7 +4,9 @@
 
 # Global for the game
 # Initialize feaure weights
-w1, w2, w3, b = 1, 1, 1, 0
+import numpy as np
+weights = [1, 1, 1, 0]
+# w1, w2, w3, b = 1, 1, 1, 0
 
 import random
 import copy
@@ -45,7 +47,7 @@ def run_round(strategy):
         # Everybody else
         for i in range(1, len(players)):
             if players[i] == learning_player:
-                action = state.select_action(deck, trump, lead)
+                action = state.select_action(deck, trump, None)
                 deck.hand_1.remove(action)
                 state.play_card(action, 'us', 0)
                 # Q-learning
@@ -53,7 +55,7 @@ def run_round(strategy):
                     a2 = select_max_action(state, deck, trump, lead)
                     maxQ = state.value_approximation(a2)
                     # w <- w + alpha(r + gamma(maxQ(s',a) - Q(s,a))grad(Q(s,a))
-                    weights = weights + alpha*(reward + gamma*maxQ - q)             
+                    weights = weights + alpha*(reward + gamma*maxQ - q)*features       
             else:
                 if players[i] == deck.hand_3:
                     team = 'us'
