@@ -42,8 +42,7 @@ def run_round(strategy):
             lead = players[i]['suit']
             state.play_card(players[i][card], team, i)
             deck.players[i].delete(card)
-        # Needs to add the value of 'being lead suit' to this card
-            # As Adam what function assigns card value        
+        # Needs to add the value of 'being lead suit' to this card       
         # Everybody else
         for i in range(1, len(players)):
             if players[i] == learning_player:
@@ -113,7 +112,7 @@ def run_round(strategy):
             deck.players[i].delete(players[i][card])
 
 # Strategy = random_choice, greedy_choice, or strategic_choice
-def game_setup(strategy):
+def game_setup(strategy, alpha, gamma):
     lead_player = pick_lead_player()
     players = [deck.hand_1, deck.hand_2, deck.hand_3, deck.hand_4]
     players = players[lead_player:] + players[:lead_player]
