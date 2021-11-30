@@ -40,7 +40,8 @@ def run_round(strategy):
             lead = players[i]['suit']
             state.play_card(players[i][card], team, i)
             deck.players[i].delete(card)
-                
+        # Needs to add the value of 'being lead suit' to this card
+            # As Adam what function assigns card value        
         # Everybody else
         for i in range(1, len(players)):
             if players[i] == learning_player:
@@ -88,6 +89,8 @@ def run_round(strategy):
         lead = players[i][card]['suit']
         state.play_card(players[i][card], team, i)
         deck.players[i].delete(card)
+    # Needs to add the value of 'being lead suit' to this card
+            # As Adam what function assigns card value
     # Everyone else
     for i in range(1, len(players)):
         if players[i] == learning_player:
