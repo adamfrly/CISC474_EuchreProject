@@ -16,7 +16,8 @@ class State():
         f1 = self.num_card_feature()
         f2 = self.high_card_feature(action)
         f3 = self.leading_team_feature(action)
-        return w1*f1 + w2*f2 + w3*f3 + b
+        features = np.array(f1, f2, f3, f4)
+        return np.dot(weights, features)
 
     # F1 - how many cards have been played
     def num_card_feature(self):
