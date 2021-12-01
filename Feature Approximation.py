@@ -1,9 +1,10 @@
 import random
-# Assumes function that add dict items of 'value' once trump is decided
+import numpy as np
 
 class State():
     def __init__(self):
         self.hand = list()
+        self.features = np.empty(4)
         
     # Adds each card being played to the current hand
     def play_card(self, card, team, player):
@@ -13,10 +14,10 @@ class State():
 
     # Returns the feature approximated Q-value a state-action pair
     def value_approximation(self, action):
-        f1 = self.num_card_feature()
-        f2 = self.high_card_feature(action)
-        f3 = self.leading_team_feature(action)
-        features = np.array(f1, f2, f3, f4)
+        self.features[0] = self.num_card_feature()
+        self.features[1] = self.high_card_feature(action)
+        self.features[2] = self.leading_team_feature(action)
+        self.features[3] = 1
         return np.dot(weights, features)
 
     # F1 - how many cards have been played
