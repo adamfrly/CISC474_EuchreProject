@@ -73,9 +73,16 @@ def card_rank(card, trump, lead):
             return 24 
     if card['suit'] == trump:
         rank += 12
-    if card['suit'] == lead:
+    elif card['suit'] == lead:
         rank += 6
     return rank
+
+def add_card_rank(card, trump, lead):
+    """
+    Adds the rank of the card to the dictionary that describes it. The dictionary key is "card_rank".
+    """
+    rank = card_rank(card, trump, lead)
+    card['card_rank'] = rank
 
 def legal_move(played, lead, hand_with, trump):
     hand = hand_with.remove(played)
@@ -98,27 +105,27 @@ def legal_move(played, lead, hand_with, trump):
     return "Somehow you fucked up bad"
 
 
-def main():
-    # {'suit' : suit, 'number' : number}
-    # ['Hearts', 'Spades', 'Diamonds', 'Clubs']
-    # (card, other, lead, trump)
-    nine_hearts = {'suit': 0, 'number' : 0}
-    queen_diamonds = {'suit': 2, 'number' : 3}
-    jack_hearts = {'suit': 0, 'number' : 2}
-    jack_diamonds = {'suit': 2, 'number' : 2}
-    ace_spades = {'suit': 1, 'number' : 5}
-    ten_clubs = {'suit': 3, 'number' : 1}
-    ten_hearts = {'suit': 0, 'number' : 1}
+# def main():
+#     # {'suit' : suit, 'number' : number}
+#     # ['Hearts', 'Spades', 'Diamonds', 'Clubs']
+#     # (card, other, lead, trump)
+#     nine_hearts = {'suit': 0, 'number' : 0}
+#     queen_diamonds = {'suit': 2, 'number' : 3}
+#     jack_hearts = {'suit': 0, 'number' : 2}
+#     jack_diamonds = {'suit': 2, 'number' : 2}
+#     ace_spades = {'suit': 1, 'number' : 5}
+#     ten_clubs = {'suit': 3, 'number' : 1}
+#     ten_hearts = {'suit': 0, 'number' : 1}
 
-    print(greater_than(nine_hearts, ten_hearts, 3, 1))
-    print(greater_than(nine_hearts, ten_hearts, 3, 0))
-    print(greater_than(nine_hearts, ten_hearts, 0, 0))
-    print(greater_than(queen_diamonds, jack_diamonds, 0, 0))
-    print(greater_than(queen_diamonds, jack_hearts, 0, 0))
-    print(greater_than(ace_spades, jack_diamonds, 1, 0))
-    print(greater_than(ten_clubs, jack_diamonds, 3, 2))
-    print(greater_than(nine_hearts, ace_spades, 0, 2))
-    print(greater_than(nine_hearts, ace_spades, 0, 1))
-    print(greater_than(nine_hearts, ace_spades, 1, 0))
+#     print(greater_than(nine_hearts, ten_hearts, 3, 1))
+#     print(greater_than(nine_hearts, ten_hearts, 3, 0))
+#     print(greater_than(nine_hearts, ten_hearts, 0, 0))
+#     print(greater_than(queen_diamonds, jack_diamonds, 0, 0))
+#     print(greater_than(queen_diamonds, jack_hearts, 0, 0))
+#     print(greater_than(ace_spades, jack_diamonds, 1, 0))
+#     print(greater_than(ten_clubs, jack_diamonds, 3, 2))
+#     print(greater_than(nine_hearts, ace_spades, 0, 2))
+#     print(greater_than(nine_hearts, ace_spades, 0, 1))
+#     print(greater_than(nine_hearts, ace_spades, 1, 0))
 
-main()
+# main()

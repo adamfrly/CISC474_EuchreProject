@@ -1,13 +1,17 @@
 import random
 import numpy as np
-from rules import is_lead, legal_move, card_rank, is_trump, is_lead
+from rules import is_lead, legal_move, add_card_rank, is_trump, is_lead
+from operator import itemgetter
 # Creating types player that plays somewhat intelligently (strong emphasis on somewhat)
 # (Done) 1. Random player: Will randomly pick a card to play until it picks a legal one (very bad)
 # (Done) 2. Greedy Player: Will play the highest rank card it is allowed to play (pretty bad)
-# TODO 3. Strategic Player: Plays the highest card it can if it has either a trump card, lead suit card or is leading, otherwise plays the lowest card it can
+# (Done) 3. Strategic Player: Plays the highest card it can if it has either a trump card, lead suit card or is leading, otherwise plays the lowest card it can
 
 def argmax(iterable):
     return max(enumerate(iterable), key=lambda x: x[1])[0]
+
+def argmin(iterable):
+    return min(enumerate(iterable), key=lambda x: x[1])[0]
 
 def random_choice(hand, trump, lead):
     """
@@ -17,15 +21,23 @@ def random_choice(hand, trump, lead):
     legal_choice = False
     while legal_choice:
         choice = random.sample(hand, 1)
-        legal_choice = legal_move(choice, hand, trump, lead)
+        if lead == None:
+            legal_choice = legal_move(choice, hand, trump, choice['suit'])
+        else:
+            legal_choice = legal_move(choice, hand, trump, lead)
     return hand.index(choice)
 
 def greedy_choice(hand, trump, lead):
     """
     Gives an index from 0 to 4 on which card to play
-    Plays the highest rank legal card (i.e. card that doesn't lead to reneging) each and every trick
+    Plays the highest rank legal card (i.e. card that doesn't lead to reneging) each and every trick.
+    This function will also add the "card_ranks" key to the dictonary that describes the cards
     """
-    ranks = np.array([card_rank(card, trump, lead) for card in hand])
+    if lead == None: # If this is the lead card
+        ranks_no_lead = np.array([add_card_rank(card, trump, card['suit']) for card in hand])
+        return argmax(ranks_no_lead)
+    
+    ranks = np.array([add_card_rank(card, trump, lead) for card in hand])
     choices_avail = np.array([1 if legal_move(card, trump, lead) else 0 for card in hand])
 
     return argmax(ranks * choices_avail)
@@ -33,9 +45,19 @@ def greedy_choice(hand, trump, lead):
 def strategic_choice(hand, trump, lead):
     """
     Gives an index from 0 to 4 on which card to play
-    Will play the highest trump and/or legal move if there is one, otherwise it'll play the lowest ranked card
+    Will play the highest trump and/or legal move if there is one, otherwise it'll play the lowest ranked card.
+    This function will also add the "card_ranks" key to the dictonary that describes the cards
     """
-    ranks = np.array([card_rank(card, trump, lead) for card in hand]) # Finds the strength of each card in a players hand
+    if lead == None: # If this is the lead card
+        hand_with_ranks_no_lead = np.array([add_card_rank(card, trump, card['suit']) for card in hand])
+        ranks_no_lead = list(map(itemgetter('card_rank'), hand_with_ranks_no_lead))
+        if max(ranks_no_lead) < 10: # If the player doesn't have at least a non-trump king to lead with
+            return argmin(ranks_no_lead)
+        else:
+            return argmax(ranks_no_lead)
+
+    hand_with_ranks = np.array([add_card_rank(card, trump, lead) for card in hand]) # Finds the strength of each card in a players hand
+    ranks = list(map(itemgetter('card_rank'), hand_with_ranks))
     choices_avail = np.array([1 if legal_move(card, trump, lead) else 0 for card in hand])
     avail_ranks = ranks * choices_avail
 
@@ -51,4 +73,3 @@ def strategic_choice(hand, trump, lead):
 
     min_rank = np.min(avail_ranks[np.nonzero(avail_ranks)]) # Lowest rank non-zero (i.e. legal) card to play
     return np.where(avail_ranks == min_rank)[0][0] # returns the index of that card
-
