@@ -33,6 +33,7 @@ def run_round(strategy, players, epsilon, alpha, gamma):
         # Each hand
         # Seaparate the leading player
         if players[0] == learning_player:
+            # Call card_rank for learning agent indicate it's been called
             action = state.select_action(deck, trump, None, epsilon)
             lead = action['suit']
             deck.hand_1.remove(action)
@@ -41,7 +42,8 @@ def run_round(strategy, players, epsilon, alpha, gamma):
             card = strategy(players[i], trump, None)
             lead = players[i]['suit']
             state.play_card(players[i][card], team, i)
-            deck.players[i].delete(card)      
+            deck.players[i].delete(card)    
+        # call card_rank for learning agent
         # Everybody else
         for i in range(1, len(players)):
             if players[i] == learning_player:
