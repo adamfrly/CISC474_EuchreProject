@@ -5,7 +5,7 @@
 # Global for the game
 # Initialize feaure weights
 import numpy as np
-weights = [1, 1, 1, 0]
+weights = np.array([1, 1, 1, 0])
 # w1, w2, w3, b = 1, 1, 1, 0
 
 import random
@@ -19,7 +19,7 @@ def pick_lead_player():
     # Each player linked to a hand
     return random.choice([0, 1, 2, 3])
             
-def run_round(strategy):
+def run_round(strategy, players, epsilon, alpha, gamma):
     state = State()
     deck = Deck()
     deck.shuffle()
@@ -33,7 +33,7 @@ def run_round(strategy):
         # Each hand
         # Seaparate the leading player
         if players[0] == learning_player:
-            action = state.select_action(deck, trump, None)
+            action = state.select_action(deck, trump, None, epsilon)
             lead = action['suit']
             deck.hand_1.remove(action)
             state.play_card(action, 'us', 0)     
@@ -45,7 +45,7 @@ def run_round(strategy):
         # Everybody else
         for i in range(1, len(players)):
             if players[i] == learning_player:
-                action = state.select_action(deck, trump, lead)
+                action = state.select_action(deck, trump, lead, epsilon)
                 deck.hand_1.remove(action)
                 state.play_card(action, 'us', 0)
                 # Q-learning
@@ -109,10 +109,10 @@ def run_round(strategy):
             deck.players[i].delete(players[i][card])
 
 # Strategy = random_choice, greedy_choice, or strategic_choice
-def game_setup(strategy, alpha, gamma):
+def game_setup(strategy, epsilon, alpha, gamma):
     lead_player = pick_lead_player()
     players = [deck.hand_1, deck.hand_2, deck.hand_3, deck.hand_4]
     players = players[lead_player:] + players[:lead_player]
-    run_round(strategy, players)
+    run_round(strategy, players, epsilon, alpha, gamma)
     
     
