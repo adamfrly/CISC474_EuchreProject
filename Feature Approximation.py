@@ -14,7 +14,7 @@ class State():
 
     # Returns the feature approximated Q-value a state-action pair
     def value_approximation(self, action):
-        self.features[0] = self.num_card_feature()
+        self.features[0] = self.num_card_feature(action)
         self.features[1] = self.high_card_feature(action)
         self.features[2] = self.leading_team_feature(action)
         self.features[3] = 1
