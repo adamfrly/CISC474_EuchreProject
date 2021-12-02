@@ -19,10 +19,10 @@ class State():
         self.features[2] = self.leading_team_feature(action)
         self.features[3] = 1
         return weights*features
-
+    
     # F1 - how many cards have been played
-    def num_card_feature(self):
-        return len(self.hand)
+    def num_card_feature(self, action):
+        return len(self.hand) * action['card_rank']
 
     # F2 - value of card in relation to the highest one played
     def high_card_feature(self, action):
