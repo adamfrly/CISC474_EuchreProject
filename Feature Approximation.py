@@ -52,7 +52,7 @@ class State():
 
     # Pick which action the learning player will use
     # Add a call to only pick from legal moves
-    def select_action(self, deck, trump, lead):
+    def select_action(self, deck, trump, lead, epsilon):
         # Epsilon greedy policy
         prob = random.random()
         if prob > epsilon:
