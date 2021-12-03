@@ -70,7 +70,7 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
                         maxQ = state.value_approximation(a2, weights)
                     # w <- w + alpha(r + gamma(maxQ(s',a) - Q(s,a))grad(Q(s,a))
                     # print("weights: ", weights, "alpha: ", alpha, "reward: ", reward, "gamma: ",  gamma, "maxQ: ", maxQ, "q: ", q, "state: ", state.features)
-                    weights = weights + alpha*(reward + gamma*maxQ - q) * state.features
+                    weights = weights + alpha*(reward + gamma*maxQ - q_value) * f_value
                     # print("update:", weights)   
             else:
                 if deck.players[i] == teammate:
@@ -84,7 +84,8 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
         # Collect data for Q_learning
         #print(state.hand)
         reward = state.reward()
-        q = state.value_approximation(action, weights)
+        q_value = state.value_approximation(action, weights)
+        f_value = state.features
         # To finish Q_learning we need data from next state
                 
         # See who leads next
