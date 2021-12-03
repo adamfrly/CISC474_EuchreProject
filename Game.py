@@ -54,8 +54,10 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
             deck.players[0].pop(card)
             if deck.players[0] == teammate:
                 teammate.pop(card)
-            for k in deck.hand_1:
-                add_card_rank(k, trump, lead)
+            for k in range(len(deck.players)):
+                if deck.players[k] == learning_player:
+                    for f in deck.players[k]:
+                        add_card_rank(f, trump, lead)
         # Everybody else
         for i in range(1, len(deck.players)):
             if deck.players[i] == learning_player:
