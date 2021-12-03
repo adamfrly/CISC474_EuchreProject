@@ -51,8 +51,6 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
             card = strategy(deck.players[0], trump, None)
             lead = deck.players[0][0]['suit']
             state.play_card(deck.players[0][card], team, 0)
-            print(card)
-            print(deck.hand_3)
             deck.players[0].pop(card)
             if deck.players[0] == teammate:
                 teammate.pop(card)
