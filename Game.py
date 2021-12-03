@@ -27,39 +27,43 @@ def pick_lead_player():
     # Each player linked to a hand
     return random.choice([0, 1, 2, 3])
             
-def run_round(deck, state, strategy, players, epsilon, alpha, gamma, weights):
+def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights):
     trump = pick_trump()    
     # Full round
     hand = 0 # 5 hands per game
     while hand < 4: # In the last hand, q_learning is different
         # Each hand
         # Seaparate the leading player
-        if players[0] == deck.hand_1:
-            for k in deck.hand_1:
-                print(deck.hand_1)
+        if deck.players[0] == learning_player:
+            for k in deck.players[0]:
+                print(deck.players[0])
                 add_card_rank(k, trump, None)
             action = state.select_action(deck, trump, None, epsilon, weights)
             lead = action['suit']
-            deck.hand_1.remove(action)
+            deck.players[0].remove(action)
+            learning_player.remove(action)
             state.play_card(action, 'us', 0)     
         else:
-            if players[0] == deck.hand_3:
+            if deck.players[0] == teammate:
                 team = 'us'
             else:
                 team = 'them'
-            card = strategy(players[0], trump, None)
-            lead = players[0][0]['suit']
-            state.play_card(players[0][card], team, 0)
+            card = strategy(deck.players[0], trump, None)
+            lead = deck.players[0][0]['suit']
+            state.play_card(deck.players[0][card], team, 0)
             print(card)
             print(deck.hand_3)
-            deck.hand_3.pop(card)    
+            deck.players[0].pop(card)
+            if deck.players[0] == teammate:
+                teammate.pop(card)
             for k in deck.hand_1:
                 add_card_rank(k, trump, lead)
         # Everybody else
-        for i in range(1, len(players)):
-            if players[i] == deck.hand_1:
+        for i in range(1, len(deck.players)):
+            if deck.players[i] == learning_player:
                 action = state.select_action(deck, trump, lead, epsilon, weights)
-                deck.hand_1.remove(action)
+                deck.players[i].remove(action)
+                learning_player.remove(action)
                 state.play_card(action, 'us', 0)
                 # Q-learning
                 if hand > 0:
@@ -71,18 +75,15 @@ def run_round(deck, state, strategy, players, epsilon, alpha, gamma, weights):
                     # w <- w + alpha(r + gamma(maxQ(s',a) - Q(s,a))grad(Q(s,a))
                     weights = weights + alpha*(reward + gamma*maxQ - q) * state.features       
             else:
-                if players[i] == deck.hand_3:
+                if deck.players[i] == teammate:
                     team = 'us'
                 else:
                     team = 'them'
-                card = strategy(players[i], trump, lead)
-                state.play_card(players[i][card], team, i)
-                if card in deck.hand_2:
-                    deck.hand_2.pop(card)
-                elif card in deck.hand_3:
-                    deck.hand_3.pop(card)
-                elif card in deck.hand_4:
-                    deck.hand_4.pop(card)
+                card = strategy(deck.players[i], trump, lead)
+                state.play_card(deck.players[i][card], team, i)
+                deck.players[i].pop(card)
+                if deck.players[0] == teammate:
+                    teammate.pop(card)
         # End of this state
         # Collect data for Q_learning
         print(state.hand)
@@ -112,9 +113,10 @@ def game_setup(strategy, epsilon, alpha, gamma):
         deck.shuffle()
         deck.deal()
         lead_player = pick_lead_player()
-        players = [deck.hand_1, deck.hand_2, deck.hand_3, deck.hand_4]
-        players = players[lead_player:] + players[:lead_player]
-        weights = run_round(deck, state, strategy, players, epsilon, alpha, gamma, weights)
+        learning_player = deck.players[0]
+        teammate = deck.players[2]
+        deck.players = deck.players[lead_player:] + deck.players[:lead_player]
+        weights = run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights)
         print(weights)
     
 
