@@ -9,7 +9,7 @@ import random
 #SUITS = ['Spades', 'Hearts', 'Clubs', 'Diamonds']
 SUITS = [0, 1, 2, 3]
 #CARDS = ['9', '10', 'Jack', 'Queen', 'King', 'Ace']
-CARDS = [0, 1, 2, 3, 4, 5]
+CARDS = [2, 3, 4, 5, 6, 7]
 
 class Deck:
 
@@ -40,23 +40,23 @@ class Deck:
         self.kitty = [card for card in reduced_deck if card not in self.hand_4]
 
 # Demonstrates one round of dealing cards
-def main():
-    test = Deck()
-    print(test.deck, 'sorted')
-    print()
-    test.shuffle()
-    print(test.deck, 'shuffled')
-    print()
-    test.deal()
-    print(test.hand_1, '1')
-    print()
-    print(test.hand_2, '2')
-    print()
-    print(test.hand_3, '3')
-    print()
-    print(test.hand_4, '4')
-    print()
-    print(test.kitty, 'kitty')
-    print()
+# def main():
+#     test = Deck()
+#     print(test.deck, 'sorted')
+#     print()
+#     test.shuffle()
+#     print(test.deck, 'shuffled')
+#     print()
+#     test.deal()
+#     print(test.hand_1, '1')
+#     print()
+#     print(test.hand_2, '2')
+#     print()
+#     print(test.hand_3, '3')
+#     print()
+#     print(test.hand_4, '4')
+#     print()
+#     print(test.kitty, 'kitty')
+#     print()
 
-main()
+# main()

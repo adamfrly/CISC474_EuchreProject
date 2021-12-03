@@ -19,12 +19,13 @@ def random_choice(hand, trump, lead):
     How a random player would choose which cards to play
     """
     legal_choice = False
-    while legal_choice:
-        choice = random.sample(hand, 1)
+    while not legal_choice:
+        choice = random.sample(hand, 1)[0]
         if lead == None:
-            legal_choice = legal_move(choice, hand, trump, choice['suit'])
+            legal_choice = legal_move(choice, choice['suit'], hand, trump)
         else:
-            legal_choice = legal_move(choice, hand, trump, lead)
+            legal_choice = legal_move(choice, lead, hand, trump)
+    [add_card_rank(card, trump, choice['suit']) for card in hand]
     return hand.index(choice)
 
 def greedy_choice(hand, trump, lead):
@@ -38,7 +39,7 @@ def greedy_choice(hand, trump, lead):
         return argmax(ranks_no_lead)
     
     ranks = np.array([add_card_rank(card, trump, lead) for card in hand])
-    choices_avail = np.array([1 if legal_move(card, trump, lead) else 0 for card in hand])
+    choices_avail = np.array([1 if legal_move(card, lead, hand, trump) else 0 for card in hand])
 
     return argmax(ranks * choices_avail)
 
@@ -58,7 +59,7 @@ def strategic_choice(hand, trump, lead):
 
     hand_with_ranks = np.array([add_card_rank(card, trump, lead) for card in hand]) # Finds the strength of each card in a players hand
     ranks = list(map(itemgetter('card_rank'), hand_with_ranks))
-    choices_avail = np.array([1 if legal_move(card, trump, lead) else 0 for card in hand])
+    choices_avail = np.array([1 if legal_move(card, lead, hand, trump) else 0 for card in hand])
     avail_ranks = ranks * choices_avail
 
     trumps_avail = np.array([1 if is_trump(card, trump) else 0 for card in hand])

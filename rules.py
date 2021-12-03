@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 # Rules that need to be implemented:
 # Adjusting the suit ranks depending on trump
@@ -6,7 +7,7 @@ import numpy as np
 # Checking if they've reneged (alternative to the above rule)
 
 def lower_bower(trump):
-    return trump - 2 if trump - 2 > 0 else trump + 2
+    return trump - 2 if trump - 2 >= 0 else trump + 2
 # Need to ask Grace to have suits ordered like this ['Hearts', 'Spades', 'Diamonds', 'Clubs'] for this to work    
 
 def is_leftbower(card, trump):
@@ -68,9 +69,9 @@ def card_rank(card, trump, lead):
     l_bower = lower_bower(trump)
     if card['number'] == 2: # Getting rid of bowers
         if card['suit'] == trump: # Right bower
-            return 25
+            return 27
         elif card['suit'] == l_bower: # Left Bower
-            return 24 
+            return 26 
     if card['suit'] == trump:
         rank += 12
     elif card['suit'] == lead:
@@ -85,7 +86,8 @@ def add_card_rank(card, trump, lead):
     card['card_rank'] = rank
 
 def legal_move(played, lead, hand_with, trump):
-    hand = hand_with.remove(played)
+    hand = copy.deepcopy(hand_with)
+    hand.remove(played)
     l_bower = lower_bower(trump)
     left_in_hand = {'suit' : l_bower, 'number' : 2} in hand
     left_played = {'suit' : l_bower, 'number' : 2} == played
