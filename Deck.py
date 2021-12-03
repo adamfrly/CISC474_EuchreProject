@@ -20,24 +20,19 @@ class Deck:
             for j in CARDS:
                 self.deck[n] = {'suit' : i, 'number' : j}
                 n += 1
-        self.hand_1 = None
-        self.hand_2 = None
-        self.hand_3 = None
-        self.hand_4 = None
-        self.kitty = None
+        self.players = [0,0,0,0]
 
     def shuffle(self):
         random.shuffle(self.deck)
 
     def deal(self):
-        self.hand_1 = random.sample(self.deck, 5)
-        reduced_deck = [card for card in self.deck if card not in self.hand_1]
-        self.hand_2 = random.sample(reduced_deck, 5)
-        reduced_deck = [card for card in reduced_deck if card not in self.hand_2]
-        self.hand_3 = random.sample(reduced_deck, 5)
-        reduced_deck = [card for card in reduced_deck if card not in self.hand_3]
-        self.hand_4 = random.sample(reduced_deck, 5)
-        self.kitty = [card for card in reduced_deck if card not in self.hand_4]
+        self.players[0] = random.sample(self.deck, 5)
+        reduced_deck = [card for card in self.deck if card not in self.players[0]]
+        self.players[1] = random.sample(reduced_deck, 5)
+        reduced_deck = [card for card in reduced_deck if card not in self.players[1]]
+        self.players[2] = random.sample(reduced_deck, 5)
+        reduced_deck = [card for card in reduced_deck if card not in self.players[2]]
+        self.players[3] = random.sample(reduced_deck, 5)
 
 # Demonstrates one round of dealing cards
 # def main():
