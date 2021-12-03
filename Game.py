@@ -94,7 +94,7 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
                 maxi = i
         winner = state.hand[maxi]['player']
         deck.players = deck.players[winner:] + deck.players[:winner]
-        trick = state.hand[maxi]['team]
+        trick = state.hand[maxi]['team']
         if trick == 'us':
             tricks += 1
         # Next hand begins
