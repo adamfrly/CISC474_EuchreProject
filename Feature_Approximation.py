@@ -15,9 +15,9 @@ class State():
 
     # Returns the feature approximated Q-value a state-action pair
     def value_approximation(self, action, weights):
-        self.features[0] = self.num_card_feature(action)
-        self.features[1] = self.high_card_feature(action)
-        self.features[2] = self.leading_team_feature(action)
+        self.features[0] = self.num_card_feature(action) / 100.0
+        self.features[1] = self.high_card_feature(action) / 100.0
+        self.features[2] = self.leading_team_feature(action) / 100.0
         self.features[3] = 1
         return np.dot(weights, self.features)
     
@@ -53,33 +53,32 @@ class State():
 
     # Pick which action the learning player will use
     # Add a call to only pick from legal moves
-    def select_action(self, deck, trump, lead, epsilon, weights):
+    def select_action(self, hand, trump, lead, epsilon, weights):
         # Epsilon greedy policy
         prob = random.random()
         if prob > epsilon:
             # Greedy selection
-            return self.select_max_action(deck, trump, lead, weights)# Greedy selection
+            return self.select_max_action(hand, trump, lead, weights)# Greedy selection
         # Random action with probability epsilon
         # Legal moves
         choices = list()
-        for x in deck.hand_1:
-            if legal_move(x, lead, deck.hand_1, trump):
+        for x in hand:
+            if legal_move(x, lead, hand, trump):
                 choices.append(x)
         return random.choice(choices)
 
     # Greedy move selection
     # Choose the action that has to the highest Q-value
     # Add a call to only pick from legal moves
-    def select_max_action(self, deck, trump, lead, weights):
+    def select_max_action(self, hand, trump, lead, weights):
         max = 0  
         # legal_moves
         choices = list()
-        for x in deck.hand_1:
-            if legal_move(x, lead, deck.hand_1, trump):
+        for x in hand:
+            if legal_move(x, lead, hand, trump):
                 choices.append(x)              
         for i in range(len(choices) - 1):
             q1 = self.value_approximation(choices[i], weights)
-            print(q1)
             q2 = self.value_approximation(choices[i+1], weights)
             if q1 > q2:
                 max = i

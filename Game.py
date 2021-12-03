@@ -36,12 +36,10 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
         # Seaparate the leading player
         if deck.players[0] == learning_player:
             for k in deck.players[0]:
-                print(deck.players[0])
                 add_card_rank(k, trump, None)
-            action = state.select_action(deck, trump, None, epsilon, weights)
+            action = state.select_action(deck.players[0], trump, None, epsilon, weights)
             lead = action['suit']
             deck.players[0].remove(action)
-            learning_player.remove(action)
             state.play_card(action, 'us', 0)     
         else:
             if deck.players[0] == teammate:
@@ -52,8 +50,6 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
             lead = deck.players[0][0]['suit']
             state.play_card(deck.players[0][card], team, 0)
             deck.players[0].pop(card)
-            if deck.players[0] == teammate:
-                teammate.pop(card)
             for k in range(len(deck.players)):
                 if deck.players[k] == learning_player:
                     for f in deck.players[k]:
@@ -61,19 +57,20 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
         # Everybody else
         for i in range(1, len(deck.players)):
             if deck.players[i] == learning_player:
-                action = state.select_action(deck, trump, lead, epsilon, weights)
+                action = state.select_action(deck.players[i], trump, lead, epsilon, weights)
                 deck.players[i].remove(action)
-                learning_player.remove(action)
                 state.play_card(action, 'us', 0)
                 # Q-learning
                 if hand > 0:
                     if hand == 4:
                         maxQ = 0
                     else:
-                        a2 = state.select_max_action(deck, trump, lead, weights)
+                        a2 = state.select_max_action(deck.players[i], trump, lead, weights)
                         maxQ = state.value_approximation(a2, weights)
                     # w <- w + alpha(r + gamma(maxQ(s',a) - Q(s,a))grad(Q(s,a))
-                    weights = weights + alpha*(reward + gamma*maxQ - q) * state.features       
+                    # print("weights: ", weights, "alpha: ", alpha, "reward: ", reward, "gamma: ",  gamma, "maxQ: ", maxQ, "q: ", q, "state: ", state.features)
+                    weights = weights + alpha*(reward + gamma*maxQ - q) * state.features
+                    # print("update:", weights)   
             else:
                 if deck.players[i] == teammate:
                     team = 'us'
@@ -82,11 +79,9 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
                 card = strategy(deck.players[i], trump, lead)
                 state.play_card(deck.players[i][card], team, i)
                 deck.players[i].pop(card)
-                if deck.players[0] == teammate:
-                    teammate.pop(card)
         # End of this state
         # Collect data for Q_learning
-        print(state.hand)
+        #print(state.hand)
         reward = state.reward()
         q = state.value_approximation(action, weights)
         # To finish Q_learning we need data from next state
@@ -97,7 +92,7 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
             if state.hand[i]['card_rank'] > state.hand[maxi]['card_rank']:
                 maxi = i
         winner = state.hand[maxi]['player']
-        players = players[winner:] + players[:winner]
+        deck.players = deck.players[winner:] + deck.players[:winner]
         # Next hand begins
         hand += 1
         state.hand = []
@@ -109,7 +104,7 @@ def game_setup(strategy, epsilon, alpha, gamma):
     weights = np.array([1, 1, 1, 0])
     state = State()
     deck = Deck()
-    for i in range(10):
+    for i in range(10000):
         deck.shuffle()
         deck.deal()
         lead_player = pick_lead_player()
@@ -120,4 +115,4 @@ def game_setup(strategy, epsilon, alpha, gamma):
         print(weights)
     
 
-game_setup(random_choice, 0.1, 0.5, 0.8)
+game_setup(random_choice, 0.1, 0.01, 0.8)
