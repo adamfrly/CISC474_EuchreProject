@@ -35,10 +35,12 @@ def greedy_choice(hand, trump, lead):
     This function will also add the "card_ranks" key to the dictonary that describes the cards
     """
     if lead == None: # If this is the lead card
-        ranks_no_lead = np.array([add_card_rank(card, trump, card['suit']) for card in hand])
+        [add_card_rank(card, trump, card['suit']) for card in hand]
+        ranks_no_lead = list(map(itemgetter('card_rank'), hand))
         return argmax(ranks_no_lead)
     
-    ranks = np.array([add_card_rank(card, trump, lead) for card in hand])
+    [add_card_rank(card, trump, lead) for card in hand]
+    ranks = list(map(itemgetter('card_rank'), hand))
     choices_avail = np.array([1 if legal_move(card, lead, hand, trump) else 0 for card in hand])
 
     return argmax(ranks * choices_avail)

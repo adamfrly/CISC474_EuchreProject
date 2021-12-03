@@ -108,16 +108,19 @@ def game_setup(strategy, epsilon, alpha, gamma):
     weights = np.array([1, 1, 1, 0])
     state = State()
     deck = Deck()
-    for i in range(10000):
-        deck.shuffle()
-        deck.deal()
-        lead_player = pick_lead_player()
-        learning_player = deck.players[0]
-        teammate = deck.players[2]
-        deck.players = deck.players[lead_player:] + deck.players[:lead_player]
-        weights, tricks = run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights)
-        print(weights)
-        print(tricks)
+    trick_total = 0
+    for j in range(50):
+        trick_total = 0
+        for i in range(1000):
+            deck.shuffle()
+            deck.deal()
+            lead_player = pick_lead_player()
+            learning_player = deck.players[0]
+            teammate = deck.players[2]
+            deck.players = deck.players[lead_player:] + deck.players[:lead_player]
+            weights, tricks = run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights)
+            trick_total += tricks
+        print(trick_total/1000)
     
 
-game_setup(random_choice, 0.1, 0.01, 0.8)
+game_setup(greedy_choice, 0.1, 0.1, 0.8)
