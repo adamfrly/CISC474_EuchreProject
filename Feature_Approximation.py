@@ -34,9 +34,14 @@ class State():
             if self.hand[i]['card_rank'] > maximum:
                 maximum = self.hand[i]['card_rank']
         diff = action['card_rank'] - maximum
-        if diff > 0:
-            return diff
-        return 1/action['card_rank']
+        if diff > 0: # Higher than current highest card
+            # The greater the difference, the lower the value 
+            return 1/(diff + 1)
+        # Else
+        # The greater the difference, the higher the value
+        # Negative sign ensures positive feature value
+        return diff * -0.001
+    
 
     # F3 - value of card in relation to which team is leading the hand
     def leading_team_feature(self, action):
