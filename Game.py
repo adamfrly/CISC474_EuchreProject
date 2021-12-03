@@ -100,7 +100,7 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
         # Next hand begins
         hand += 1
         state.hand = []
-    return weights
+    return weights, tricks
 
 
 # Strategy = random_choice, greedy_choice, or strategic_choice
@@ -115,8 +115,9 @@ def game_setup(strategy, epsilon, alpha, gamma):
         learning_player = deck.players[0]
         teammate = deck.players[2]
         deck.players = deck.players[lead_player:] + deck.players[:lead_player]
-        weights = run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights)
+        weights, tricks = run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights)
         print(weights)
+        print(tricks)
     
 
 game_setup(random_choice, 0.1, 0.01, 0.8)
