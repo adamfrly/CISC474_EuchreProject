@@ -28,7 +28,8 @@ def pick_lead_player():
     return random.choice([0, 1, 2, 3])
             
 def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights):
-    trump = pick_trump()    
+    trump = pick_trump()  
+    tricks = 0
     # Full round
     hand = 0 # 5 hands per game
     while hand < 4: # In the last hand, q_learning is different
@@ -93,6 +94,9 @@ def run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, 
                 maxi = i
         winner = state.hand[maxi]['player']
         deck.players = deck.players[winner:] + deck.players[:winner]
+        trick = state.hand[maxi]['team]
+        if trick == 'us':
+            tricks += 1
         # Next hand begins
         hand += 1
         state.hand = []
