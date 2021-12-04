@@ -11,7 +11,7 @@ SUITS = [0, 1, 2, 3]
 #CARDS = ['9', '10', 'Jack', 'Queen', 'King', 'Ace']
 # CARDS = [2, 3, 4, 5, 6, 7]
 
-from Feature_Approximation import State
+from Feature_Lone_Wolf import State
 from Deck import Deck
 from rules import add_card_rank
 from dumb_player import random_choice, greedy_choice, strategic_choice
