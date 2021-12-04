@@ -51,10 +51,20 @@ class State():
         for i in range(1, len(self.hand)):
             if self.hand[i]['card_rank'] > self.hand[maxi]['card_rank']:
                 maxi = i
-        if self.hand[maxi]['team'] == 'us':
-            return 1/action['card_rank']
-        else:
-            return action['card_rank']
+        if self.hand[maxi]['team'] == 'us': 
+            # Positive value for leaving the max card 'us' and conserving high cards
+            # return 1/action['card_rank'] OLD
+            if action['card_rank'] > self.hand[maxi]['card_rank']:
+                return 0
+            else:
+                return 1            
+        else: 
+            # Positive value for changning the max card to 'us'
+            # return action['card_rank'] OLD
+            if action['card_rank'] > self.hand[maxi]['card_rank']:
+                return 1
+            else:
+                return 0
 
     # Pick which action the learning player will use
     # Add a call to only pick from legal moves
