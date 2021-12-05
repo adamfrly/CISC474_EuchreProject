@@ -26,56 +26,7 @@ class State():
     def num_card_feature(self, action):
         return len(self.hand) * action['card_rank'] / (3 * 26)
 
-    # F2 - value of card in relation to the highest one played
-    # Only deals with cards below the highest one played
-    def neg_diff_magnitude_feature(self, action):
-        if len(self.hand) == 0:
-            return 1
-        # Finds highest card
-        maximum = self.hand[-1]['card_rank']
-        for i in range(len(self.hand)-1):
-            if self.hand[i]['card_rank'] > maximum:
-                maximum = self.hand[i]['card_rank']
-        diff = action['card_rank'] - maximum
-        if diff > 0:
-            # Higher than current highest card
-            return 0
-        # The greater the difference, the higher the value
-        # Negative sign ensures positive feature value
-        return -diff / 26
-
-    # F3 - value of card in relation to the highest one played
-    # Only deals with cards above the highest one played
-    def pos_diff_magnitude_feature(self, action):
-        if len(self.hand) == 0:
-            return 1
-        # Finds highest card
-        maximum = self.hand[-1]['card_rank']
-        for i in range(len(self.hand)-1):
-            if self.hand[i]['card_rank'] > maximum:
-                maximum = self.hand[i]['card_rank']
-        diff = action['card_rank'] - maximum
-        if diff > 0:
-            # The greater the difference, the lower the value
-            return 1/(diff + 1)
-        else:
-            # Lower than current highest card
-            return 0
-
-    # F4 - whether the card is above or below the highest one played
-    def diff_sign_feature(self, action):
-        if len(self.hand) == 0:
-            return 1
-        maximum = self.hand[-1]['card_rank']
-        for i in range(len(self.hand)-1):
-            if self.hand[i]['card_rank'] > maximum:
-                maximum = self.hand[i]['card_rank']
-        diff = action['card_rank'] - maximum
-        if diff > 0:
-            return 1
-        else:
-            return 0
-
+    # F2 - Whether or not the highest current card is yours or the other team's
     def leading_team_feature(self, action):
         if len(self.hand) == 0:
             return 0
@@ -97,6 +48,77 @@ class State():
                 return 1
             else:
                 return 0
+    
+    # F3 - value of card in relation to the highest one played
+    # Only part of the original feature set, it was reworked into F4, F5, and F6 in the Issues section
+    def high_card_feature(self, action):
+        if len(self.hand) == 0:
+            return action['card_rank']
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0: # Higher than current highest card
+            # The greater the difference, the lower the value 
+            return 1/(diff + 1)
+        # Else
+        # The greater the difference, the higher the value
+        # Negative sign ensures positive feature value
+        return diff * -0.001
+
+    # F4 - value of card in relation to the highest one played
+    # Only deals with cards below the highest one played
+    # Only part of the attempted solution to fix problems from the Issues section
+    def neg_diff_magnitude_feature(self, action):
+        if len(self.hand) == 0:
+            return 1
+        # Finds highest card
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0:
+            # Higher than current highest card
+            return 0
+        # The greater the difference, the higher the value
+        # Negative sign ensures positive feature value
+        return -diff / 26
+
+    # F5 - value of card in relation to the highest one played
+    # Only deals with cards above the highest one played
+    # Only part of the attempted solution to fix problems from the Issues section
+    def pos_diff_magnitude_feature(self, action):
+        if len(self.hand) == 0:
+            return 1
+        # Finds highest card
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0:
+            # The greater the difference, the lower the value
+            return 1/(diff + 1)
+        else:
+            # Lower than current highest card
+            return 0
+
+    # F6 - whether the card is above or below the highest one played
+    # Only part of the attempted solution to fix problems from the Issues section
+    def diff_sign_feature(self, action):
+        if len(self.hand) == 0:
+            return 1
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0:
+            return 1
+        else:
+            return 0
 
     # Pick which action the learning player will use
     def select_action(self, hand, trump, lead, epsilon, weights):
