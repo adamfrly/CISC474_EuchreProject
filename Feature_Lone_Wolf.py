@@ -76,6 +76,28 @@ class State():
         else:
             return 0
 
+    def leading_team_feature(self, action):
+        if len(self.hand) == 0:
+            return 0
+        maxi = 0
+        for i in range(1, len(self.hand)):
+            if self.hand[i]['card_rank'] > self.hand[maxi]['card_rank']:
+                maxi = i
+        if self.hand[maxi]['team'] == 'us': 
+            # Positive value for leaving the max card 'us' and conserving high cards
+            # return 1/action['card_rank'] OLD
+            if action['card_rank'] > self.hand[maxi]['card_rank']:
+                return 0
+            else:
+                return 1            
+        else: 
+            # Positive value for changning the max card to 'us'
+            # return action['card_rank'] OLD
+            if action['card_rank'] > self.hand[maxi]['card_rank']:
+                return 1
+            else:
+                return 0
+
     # Pick which action the learning player will use
     def select_action(self, hand, trump, lead, epsilon, weights):
         # Epsilon greedy policy
