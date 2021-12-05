@@ -121,7 +121,8 @@ def game_setup(strategy, epsilon, alpha, gamma):
             deck.players = deck.players[lead_player:] + deck.players[:lead_player]
             weights, tricks = run_round(deck, state, strategy, learning_player, teammate, epsilon, alpha, gamma, weights)
             trick_total += tricks
-        print(trick_total/1000)
+        # print(trick_total/1000)
+        print(np.average(weights))
     
 
-game_setup(greedy_choice, 0.1, 0.1, 0.8)
+game_setup(greedy_choice, 0.3, 0.01, 0.9)

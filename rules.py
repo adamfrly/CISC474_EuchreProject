@@ -1,16 +1,19 @@
 import numpy as np
 import copy
 
-# Rules that need to be implemented:
-# Adjusting the suit ranks depending on trump
-# Checking if a move is legal depending on the lead and their hand
-# Checking if they've reneged (alternative to the above rule)
+# A series of logical checks and operations that are useful when enforcing the rules of Euchre
 
 def lower_bower(trump):
+    """
+    Suits are represented by a number from 0-3. This function tells you the number of the
+    left bower's suit (the suit with the same colour)
+    """
     return trump - 2 if trump - 2 >= 0 else trump + 2
-# Need to ask Grace to have suits ordered like this ['Hearts', 'Spades', 'Diamonds', 'Clubs'] for this to work    
 
 def is_leftbower(card, trump):
+    """
+    Determines if a card is the left bower (Jack with suit of the same colour as the trump suit)
+    """
     if card['number'] != 2:
         return False
     l_bower = lower_bower(trump)
@@ -19,6 +22,9 @@ def is_leftbower(card, trump):
     return False
 
 def is_trump(card, trump):
+    """
+    Determines if a suit is trump. The left bower is considered a trump
+    """
     if card['suit'] == trump:
         return True
     if is_leftbower(card):
@@ -26,6 +32,9 @@ def is_trump(card, trump):
     return False
 
 def is_lead(card, trump, lead):
+    """
+    Determines if a card is the lead suit. The left bower is considered the same suit as trump
+    """
     if card['suit'] == lead:
         return True
     if lead == trump:
@@ -41,20 +50,20 @@ def greater_than(card, other, lead, trump):
     c_rank = card['number']
     o_rank = other['number']
 
-    if (card['number'] == 2) or (other['number'] == 2): # Getting rid of bowers
-        if card == {'suit' : trump, 'number' : 2}: # Right bower
+    if (card['number'] == 2) or (other['number'] == 2): # Dealing with the annoying case of bowers
+        if card == {'suit' : trump, 'number' : 2}: # Right bower is always largest
             return True
         elif other == {'suit' : trump, 'number' : 2}:
             return False
-        elif card == {'suit' : l_bower, 'number' : 2}: # Left Bower
+        elif card == {'suit' : l_bower, 'number' : 2}: # Left Bower is always second largest
             return True 
         elif other == {'suit' : l_bower, 'number' : 2}:
             return False
-    if card['suit'] == trump:
+    if card['suit'] == trump: # Trumps are always above non-trumps
         c_rank += 12
     if other['suit'] == trump:
         o_rank += 12
-    if card['suit'] == lead:
+    if card['suit'] == lead: # Leads are always above non-lead cards
         c_rank += 6
     if other['suit'] == lead:
         o_rank += 6
@@ -81,53 +90,34 @@ def card_rank(card, trump, lead):
 def add_card_rank(card, trump, lead):
     """
     Adds the rank of the card to the dictionary that describes it. The dictionary key is "card_rank".
+    Card dictionary is {suit: int, number: int, card_rank: int}
+    Number is the value on the face of the card. Rank is the strength of the card for that hand
     """
     rank = card_rank(card, trump, lead)
     card['card_rank'] = rank
 
 def legal_move(played, lead, hand_with, trump):
-    hand = copy.deepcopy(hand_with)
-    hand.remove(played)
+    """
+    Checks if the card to be played is legal. There are three main cases, all revolving
+    around how involved the left bower is
+    """
+    hand = copy.deepcopy(hand_with) # Creating a copy of the hand to manipulate
+    hand.remove(played) # Hand without the card to be played
+
     l_bower = lower_bower(trump)
-    left_in_hand = {'suit' : l_bower, 'number' : 2} in hand
-    left_played = {'suit' : l_bower, 'number' : 2} == played
+    left_in_hand = {'suit' : l_bower, 'number' : 2} in hand # Boolean if the left bower is in the player's hand
+    left_played = {'suit' : l_bower, 'number' : 2} == played # Boolean if the left bower is being played
 
     if not (left_in_hand and left_played): # Left bower is not involved at all
         played_lead = played['suit'] == lead
         has_lead_suit = any(card['suit']==lead for card in hand)
-        return played_lead or not has_lead_suit # Check with Grace, this might be wrong, I made a truth table but not sure
-    elif left_played:
-        played_lead = trump == lead
+        return played_lead or not has_lead_suit # Returns True when a lead suit is played or when a non lead uit is played but the player doesn't have any lead suit
+    elif left_played: # Left bower was played
+        played_lead = trump == lead # Makes sure l_bower is treated as a trump
         has_lead_suit = any(card['suit']==lead for card in hand)
         return played_lead or not has_lead_suit
-    elif left_in_hand:
+    elif left_in_hand: # Left bower is in hand
         played_lead = played['suit'] == lead
-        has_lead_suit = any(card['suit']==lead for card in hand) or lead == trump
+        has_lead_suit = any(card['suit']==lead for card in hand) or lead == trump # Ensures l_bower is treated as trump
         return played_lead or not has_lead_suit
-    return "Somehow you fucked up bad"
-
-
-# def main():
-#     # {'suit' : suit, 'number' : number}
-#     # ['Hearts', 'Spades', 'Diamonds', 'Clubs']
-#     # (card, other, lead, trump)
-#     nine_hearts = {'suit': 0, 'number' : 0}
-#     queen_diamonds = {'suit': 2, 'number' : 3}
-#     jack_hearts = {'suit': 0, 'number' : 2}
-#     jack_diamonds = {'suit': 2, 'number' : 2}
-#     ace_spades = {'suit': 1, 'number' : 5}
-#     ten_clubs = {'suit': 3, 'number' : 1}
-#     ten_hearts = {'suit': 0, 'number' : 1}
-
-#     print(greater_than(nine_hearts, ten_hearts, 3, 1))
-#     print(greater_than(nine_hearts, ten_hearts, 3, 0))
-#     print(greater_than(nine_hearts, ten_hearts, 0, 0))
-#     print(greater_than(queen_diamonds, jack_diamonds, 0, 0))
-#     print(greater_than(queen_diamonds, jack_hearts, 0, 0))
-#     print(greater_than(ace_spades, jack_diamonds, 1, 0))
-#     print(greater_than(ten_clubs, jack_diamonds, 3, 2))
-#     print(greater_than(nine_hearts, ace_spades, 0, 2))
-#     print(greater_than(nine_hearts, ace_spades, 0, 1))
-#     print(greater_than(nine_hearts, ace_spades, 1, 0))
-
-# main()
+    return "You should not be getting to this point"
