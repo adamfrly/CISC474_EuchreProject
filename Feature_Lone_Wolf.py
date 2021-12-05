@@ -5,7 +5,7 @@ from rules import legal_move
 class State():
     def __init__(self):
         self.hand = list()
-        self.features = np.empty(4)
+        self.features = np.empty(5)
         
     # Adds each card being played to the current hand
     def play_card(self, card, index, player):
@@ -15,19 +15,21 @@ class State():
 
     # Returns the feature approximated Q-value a state-action pair
     def value_approximation(self, action, weights):
-        self.features[0] = self.num_card_feature(action) / 100.0
-        self.features[1] = self.high_card_feature(action) / 100.0
-        self.features[2] = 1
+        self.features[0] = self.num_card_feature(action)
+        self.features[1] = self.neg_diff_magnitude_feature(action)
+        self.features[2] = self.pos_diff_magnitude_feature(action)
+        self.features[3] = self.diff_sign_feature(action)
+        self.features[4] = 1
         return np.dot(weights, self.features)
     
     # F1 - how many cards have been played
     def num_card_feature(self, action):
-        return len(self.hand) * action['card_rank']
+        return len(self.hand) * action['card_rank'] / (3 * 26)
 
     # F2 - value of card in relation to the highest one played
-    def high_card_feature(self, action):
+    def neg_diff_magnitude_feature(self, action):
         if len(self.hand) == 0:
-            return action['card_rank']
+            return 1
         maximum = self.hand[-1]['card_rank']
         for i in range(len(self.hand)-1):
             if self.hand[i]['card_rank'] > maximum:
@@ -35,11 +37,38 @@ class State():
         diff = action['card_rank'] - maximum
         if diff > 0: # Higher than current highest card
             # The greater the difference, the lower the value 
-            return 1/(diff + 1)
+            return 0
         # Else
         # The greater the difference, the higher the value
         # Negative sign ensures positive feature value
-        return diff * -0.001
+        return -diff / 26
+
+    def pos_diff_magnitude_feature(self, action):
+        if len(self.hand) == 0:
+            return 1
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0:
+            return 1/(diff + 1)
+        else:
+            return 0
+
+    def diff_sign_feature(self, action):
+        if len(self.hand) == 0:
+            return 1
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0:
+            return 1
+        else:
+            return 0
+
 
     # Pick which action the learning player will use
     # Add a call to only pick from legal moves

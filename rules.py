@@ -69,9 +69,9 @@ def card_rank(card, trump, lead):
     l_bower = lower_bower(trump)
     if card['number'] == 2: # Getting rid of bowers
         if card['suit'] == trump: # Right bower
-            return 27
+            return 25
         elif card['suit'] == l_bower: # Left Bower
-            return 26 
+            return 24 
     if card['suit'] == trump:
         rank += 12
     elif card['suit'] == lead:

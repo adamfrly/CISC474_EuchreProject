@@ -9,7 +9,7 @@ import random
 #SUITS = ['Spades', 'Hearts', 'Clubs', 'Diamonds']
 SUITS = [0, 1, 2, 3]
 #CARDS = ['9', '10', 'Jack', 'Queen', 'King', 'Ace']
-CARDS = [2, 3, 4, 5, 6, 7]
+CARDS = [0, 1, 2, 3, 4, 5]
 
 class Deck:
 
