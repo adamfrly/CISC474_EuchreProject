@@ -27,35 +27,42 @@ class State():
         return len(self.hand) * action['card_rank'] / (3 * 26)
 
     # F2 - value of card in relation to the highest one played
+    # Only deals with cards below the highest one played
     def neg_diff_magnitude_feature(self, action):
         if len(self.hand) == 0:
             return 1
-        maximum = self.hand[-1]['card_rank']
-        for i in range(len(self.hand)-1):
-            if self.hand[i]['card_rank'] > maximum:
-                maximum = self.hand[i]['card_rank']
-        diff = action['card_rank'] - maximum
-        if diff > 0: # Higher than current highest card
-            # The greater the difference, the lower the value 
-            return 0
-        # Else
-        # The greater the difference, the higher the value
-        # Negative sign ensures positive feature value
-        return -diff / 26
-
-    def pos_diff_magnitude_feature(self, action):
-        if len(self.hand) == 0:
-            return 1
+        # Finds highest card
         maximum = self.hand[-1]['card_rank']
         for i in range(len(self.hand)-1):
             if self.hand[i]['card_rank'] > maximum:
                 maximum = self.hand[i]['card_rank']
         diff = action['card_rank'] - maximum
         if diff > 0:
+            # Higher than current highest card
+            return 0
+        # The greater the difference, the higher the value
+        # Negative sign ensures positive feature value
+        return -diff / 26
+
+    # F3 - value of card in relation to the highest one played
+    # Only deals with cards above the highest one played
+    def pos_diff_magnitude_feature(self, action):
+        if len(self.hand) == 0:
+            return 1
+        # Finds highest card
+        maximum = self.hand[-1]['card_rank']
+        for i in range(len(self.hand)-1):
+            if self.hand[i]['card_rank'] > maximum:
+                maximum = self.hand[i]['card_rank']
+        diff = action['card_rank'] - maximum
+        if diff > 0:
+            # The greater the difference, the lower the value
             return 1/(diff + 1)
         else:
+            # Lower than current highest card
             return 0
 
+    # F4 - whether the card is above or below the highest one played
     def diff_sign_feature(self, action):
         if len(self.hand) == 0:
             return 1
@@ -69,9 +76,7 @@ class State():
         else:
             return 0
 
-
     # Pick which action the learning player will use
-    # Add a call to only pick from legal moves
     def select_action(self, hand, trump, lead, epsilon, weights):
         # Epsilon greedy policy
         prob = random.random()
@@ -88,7 +93,6 @@ class State():
 
     # Greedy move selection
     # Choose the action that has to the highest Q-value
-    # Add a call to only pick from legal moves
     def select_max_action(self, hand, trump, lead, weights):
         max = 0  
         # legal_moves
@@ -106,6 +110,7 @@ class State():
         return choices[max]
 
     # Assuming learning agent is 'me'
+    # Returns the reward for a hand
     def reward(self):
         maxi = 0
         for i in range(1, len(self.hand)):
